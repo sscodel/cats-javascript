@@ -58,13 +58,22 @@ class Repeat extends CTS.Commands.Command
   #          'step': '2' }}
   #             
   applyTo: (node, context, args, engine) ->
+    console.log("*********** IN APPLY TO ****************")
     defaultTarget = args["."]
     defaultArg = @._resolveArgument(defaultTarget["."], node)
-
+    console.log("SKLFJLSKDJFLKSDJFLKSDJLKFDJ NOW REPEATING")
     step = 1
+    offsetstart = 0
     # HASH MEMBERSHIP IS of, NOT in
     if "step" of defaultTarget
       step = parseInt(defaultTarget["step"])
+      console.log("THIS IS THE STEP****************")
+      console.log(step);
+      
+    if "offsetstart" of defaultTarget
+      offsetstart = parseInt(defaultTarget["offsetstart"])
+      console.log("THIS IS THE OFFSET****************")
+      console.log(offsetstart);
     
     collection = context.resolve(defaultArg)
 
@@ -81,7 +90,8 @@ class Repeat extends CTS.Commands.Command
       templateHtml = node.html()
       node.html("")
       zeroIndex = 0
-      for elem in collection
+      for elem in collection[offsetstart..] by step
+        console.log("******** number of elems****************")
         context.setZeroIndex(zeroIndex)
         newNode = $(templateHtml)
         context.push(elem)
@@ -114,10 +124,15 @@ class Repeat extends CTS.Commands.Command
     firstPush = true 
 
     $.each(node.children(), (idx, child) =>
+      console.log("******** idx ***********")
+      console.log(idx)
+      console.log("******** step ***********")
+      console.log(step)
       if firstPush
         firstPush = false 
         context.push({})
       if (idx % step == 0) and (idx != 0)
+        
         addIterable(context)
         context.push({})
       engine._recoverData($(child), context)
